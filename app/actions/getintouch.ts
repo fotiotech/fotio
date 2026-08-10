@@ -2,7 +2,6 @@
 
 import GetInTouch from "@/models/Getintouch";
 import { connection } from "@/utils/connection";
-import { revalidatePath } from "next/cache";
 import { z } from "zod"; // optional, but recommended for validation
 
 // Define a validation schema using Zod (install if not present: npm install zod)
