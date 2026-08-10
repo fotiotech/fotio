@@ -59,5 +59,4 @@ export async function submitContactForm(formData: FormData) {
 export async function deleteSubmission(id: string) {
   await connection();
   await GetInTouch.findByIdAndDelete(id);
-  //   revalidatePath("/admin/getintouch");
 }
