@@ -1,43 +1,9 @@
 "use client";
 
-import { submitContactForm } from "@/app/actions/getintouch";
 import Image from "next/image";
-import { FormEvent, useState, useTransition } from "react";
+import ContactForm from "./GetIntouch";
 
 const Services = () => {
-  type ContactFormErrors = {
-    firstName?: string[];
-    lastName?: string[];
-    email?: string[];
-    contact?: string[];
-    message?: string[];
-  };
-
-  type ContactFormState = {
-    success: boolean;
-    errors: ContactFormErrors | null;
-    message?: string;
-  };
-
-  const [state, setState] = useState<ContactFormState>({
-    success: false,
-    errors: null,
-    message: "",
-  });
-
-  const [isPending, startTransition] = useTransition();
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-
-    startTransition(() => {
-      submitContactForm(formData).then((result) =>
-        setState(result as ContactFormState),
-      );
-    });
-  };
-
   return (
     <section id="service" className="py-16 bg-gray-50">
       <h2 className="text-3xl font-semibold text-center text-gray-800 mb-12">
@@ -160,67 +126,7 @@ const Services = () => {
           your goals.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              className="border border-gray-300 p-3 rounded-md w-full"
-              required
-            />
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              className="border border-gray-300 p-3 rounded-md w-full"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="joe@gmail.com"
-              className="border border-gray-300 p-3 rounded-md w-full"
-              required
-            />
-            <input
-              type="tel"
-              name="contact"
-              placeholder="Contact"
-              className="border border-gray-300 p-3 rounded-md w-full"
-              required
-            />
-          </div>
-          <textarea
-            name="message"
-            placeholder="Message"
-            className="border border-gray-300 p-3 rounded-md w-full h-32"
-            required
-          />
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-blue-500 text-white py-3 px-6 rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isPending ? "Submitting..." : "Submit"}
-          </button>
-        </form>
-
-        {/* Display feedback messages */}
-        {state?.errors && (
-          <div className="mt-4 text-red-600">
-            {Object.values(state.errors)
-              .flat()
-              .map((err, idx) => (
-                <p key={idx}>{err as string}</p>
-              ))}
-          </div>
-        )}
-        {state?.success && (
-          <div className="mt-4 text-green-600">
-            <p>{state.message}</p>
-          </div>
-        )}
+        <ContactForm />
       </div>
     </section>
   );

@@ -1,61 +1,45 @@
 "use server";
 
-import GetInTouch from "@/models/Getintouch";
-import { connection } from "@/utils/connection";
-import { z } from "zod"; // optional, but recommended for validation
+import { getPayload } from "payload";
+import config from "@payload-config";
+import { contactSchema } from "../shema/getintouch";
 
-// Define a validation schema using Zod (install if not present: npm install zod)
-const formSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  contact: z.string().min(1, "Contact number is required"),
-  message: z.string().min(1, "Message is required"),
-});
+export type ContactState =
+  | {
+      success: true;
+    }
+  | {
+      errors: {
+        firstName?: string[];
+        lastName?: string[];
+        email?: string[];
+        contact?: string[];
+        message?: string[];
+      };
+    }
+  | null;
 
-export async function submitContactForm(formData: FormData) {
-  // Extract raw data from FormData
-  const rawData = {
-    firstName: formData.get("firstName") as string,
-    lastName: formData.get("lastName") as string,
-    email: formData.get("email") as string,
-    contact: formData.get("contact") as string,
-    message: formData.get("message") as string,
-  };
+export async function submitContact(
+  _prevState: ContactState,
+  formData: FormData,
+): Promise<ContactState> {
+  const validated = contactSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    contact: formData.get("contact"),
+    message: formData.get("message"),
+  });
 
-  // Validate the data
-  const result = formSchema.safeParse(rawData);
-  if (!result.success) {
-    return {
-      success: false,
-      errors: result.error.flatten().fieldErrors,
-    };
+  if (!validated.success) {
+    return { errors: validated.error.flatten().fieldErrors };
   }
 
-  const validatedData = result.data;
+  const payload = await getPayload({ config });
+  await payload.create({
+    collection: "get-in-touch",
+    data: validated.data,
+  });
 
-  try {
-    // Ensure database connection
-    await connection();
-
-    // Create and save the document
-    const newEntry = new GetInTouch(validatedData);
-    await newEntry.save();
-
-    return {
-      success: true,
-      message: "Your message has been sent successfully!",
-    };
-  } catch (error) {
-    console.error("Error saving contact form:", error);
-    return {
-      success: false,
-      errors: { _form: "Something went wrong. Please try again later." },
-    };
-  }
-}
-
-export async function deleteSubmission(id: string) {
-  await connection();
-  await GetInTouch.findByIdAndDelete(id);
+  return { success: true };
 }
