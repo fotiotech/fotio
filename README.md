@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dyfk — Portfolio
 
-## Getting Started
+A content-managed portfolio site built with **Next.js 16**, **Payload CMS 3**, and
+**MongoDB**. All site content is editable from the Payload admin panel.
 
-First, run the development server:
+## Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4
+- **CMS:** Payload CMS 3 (Lexical rich text, Mongoose/MongoDB)
+- **Language:** TypeScript
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Frontend: <http://localhost:3000>
+- Payload admin: <http://localhost:3000/admin>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable              | Required | Purpose                                        |
+| --------------------- | -------- | ---------------------------------------------- |
+| `PAYLOAD_SECRET`      | yes      | Secret used by Payload                         |
+| `DATABASE_URL`        | yes      | MongoDB connection string                      |
+| `CONTACT_NOTIFY_EMAIL`| no       | Email that receives new contact-form messages  |
 
-## Learn More
+Copy `.env.example` → `.env` if you don't already have one. To actually receive
+email notifications from the contact form, also configure a Payload email
+adapter (e.g. Resend or Nodemailer) in `payload.config.ts`; without one, the
+submission still saves to the `get-in-touch` collection and the notification is
+skipped safely.
 
-To learn more about Next.js, take a look at the following resources:
+## Content model
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Content is managed entirely from the Payload admin (`/admin`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Globals
 
-## Deploy on Vercel
+- **Site Settings** (`site-settings`) — name, role, tagline, bio, profile/hero
+  images, contact details, resume file, social links, and SEO fields.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Collections
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Projects** (`projects`) — title, slug, excerpt, rich-text description,
+  featured image, gallery, live/source URLs, and technologies. Rendered as the
+  featured grid and at `/project/[slug]`.
+- **Technologies** (`technologies`) — the Skills section, grouped by category
+  with optional color badges.
+- **Services** (`services`) — the Services section.
+- **Experience** (`experience`) — work/education timeline.
+- **Testimonials** (`testimonials`) — quotes with optional avatar and rating.
+- **Posts** (`posts`) — the blog, at `/blog` and `/blog/[slug]`.
+- **Get In Touch** (`get-in-touch`) — contact-form submissions (admin-only read).
+- **Media** (`media`) — uploaded images and files.
+
+## Routes
+
+| Route               | Description                     |
+| ------------------- | ------------------------------- |
+| `/`                 | One-page portfolio              |
+| `/project/[slug]`   | Project case study              |
+| `/blog`             | Blog index                      |
+| `/blog/[slug]`      | Blog post                       |
+| `/admin`            | Payload admin panel             |
+| `/sitemap.xml`      | Auto-generated sitemap          |
+| `/robots.txt`       | Robots rules                    |
+
+## Scripts
+
+```bash
+pnpm dev      # start the dev server
+pnpm build    # production build
+pnpm start    # serve the production build
+pnpm lint     # run ESLint
+```

@@ -1,30 +1,57 @@
-import { headers as getHeaders } from "next/headers.js";
-import { getPayload } from "payload";
-
-import config from "@/payload.config";
 import Header from "@/components/Header";
-import Projects from "@/components/Projects";
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
 import AboutSection from "@/components/About";
+import Skills from "@/components/Skills";
+import Services from "@/components/Services";
+import Projects from "@/components/Projects";
+import ExperienceTimeline from "@/components/Experience";
+import Testimonials from "@/components/Testimonials";
+import Blog from "@/components/Blog";
 import ContactSection from "@/components/Contact";
 import Footer from "@/components/Footer";
 
+import {
+  getSiteSettings,
+  getProjects,
+  getTechnologies,
+  getServices,
+  getExperience,
+  getTestimonials,
+  getPosts,
+} from "@/lib/data";
+
 export default async function HomePage() {
-  const headers = await getHeaders();
-  const payloadConfig = await config;
-  const payload = await getPayload({ config: payloadConfig });
-  const { user } = await payload.auth({ headers });
+  const [
+    site,
+    projects,
+    technologies,
+    services,
+    experience,
+    testimonials,
+    posts,
+  ] = await Promise.all([
+    getSiteSettings(),
+    getProjects(),
+    getTechnologies(),
+    getServices(),
+    getExperience(),
+    getTestimonials(),
+    getPosts(),
+  ]);
 
   return (
-    <div className="home">
-      <Header />
-      <Hero />
-      <AboutSection />
-      <Services />
-      <Projects />
-      <ContactSection />
-      <Footer />
-    </div>
+    <>
+      <Header site={site} />
+      <Hero site={site} />
+      <AboutSection site={site} />
+      <Skills technologies={technologies} />
+      <Services services={services} />
+      <Projects projects={projects} />
+      <ExperienceTimeline items={experience} />
+      <Testimonials items={testimonials} />
+      <Blog posts={posts} />
+      <ContactSection site={site} />
+      <Footer site={site} />
+    </>
   );
 }

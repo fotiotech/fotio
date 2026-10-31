@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,20 +23,34 @@ export default function ContactForm() {
 
   if (state && "success" in state) {
     return (
-      <p className="text-green-600">Thank you! Your message has been sent.</p>
+      <p className="rounded-lg border border-border bg-muted/50 p-4 text-green-600 dark:text-green-400">
+        Thank you! Your message has been sent.
+      </p>
     );
   }
 
   const errors = state && "errors" in state ? state.errors : undefined;
 
   return (
-    <form action={formAction} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+    <form action={formAction} className="space-y-5" noValidate>
+      {/* Honeypot field — visually hidden from humans, attractive to bots. */}
+      <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+        <Label htmlFor="website">Website</Label>
+        <Input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="firstName">First Name</Label>
           <Input id="firstName" name="firstName" required />
           {errors?.firstName && (
-            <p className="text-sm text-red-500">{errors.firstName[0]}</p>
+            <p className="text-sm text-destructive">{errors.firstName[0]}</p>
           )}
         </div>
 
@@ -43,7 +58,7 @@ export default function ContactForm() {
           <Label htmlFor="lastName">Last Name</Label>
           <Input id="lastName" name="lastName" required />
           {errors?.lastName && (
-            <p className="text-sm text-red-500">{errors.lastName[0]}</p>
+            <p className="text-sm text-destructive">{errors.lastName[0]}</p>
           )}
         </div>
       </div>
@@ -52,7 +67,7 @@ export default function ContactForm() {
         <Label htmlFor="email">Email</Label>
         <Input id="email" name="email" type="email" required />
         {errors?.email && (
-          <p className="text-sm text-red-500">{errors.email[0]}</p>
+          <p className="text-sm text-destructive">{errors.email[0]}</p>
         )}
       </div>
 
@@ -60,7 +75,7 @@ export default function ContactForm() {
         <Label htmlFor="contact">Contact</Label>
         <Input id="contact" name="contact" required />
         {errors?.contact && (
-          <p className="text-sm text-red-500">{errors.contact[0]}</p>
+          <p className="text-sm text-destructive">{errors.contact[0]}</p>
         )}
       </div>
 
@@ -68,7 +83,7 @@ export default function ContactForm() {
         <Label htmlFor="message">Message</Label>
         <Textarea id="message" name="message" rows={5} required />
         {errors?.message && (
-          <p className="text-sm text-red-500">{errors.message[0]}</p>
+          <p className="text-sm text-destructive">{errors.message[0]}</p>
         )}
       </div>
 

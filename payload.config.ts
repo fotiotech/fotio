@@ -10,6 +10,11 @@ import { Media } from "./collections/Media";
 import { Projects } from "./collections/Projects";
 import { Technologies } from "./collections/Technologies";
 import { GetInTouch } from "./collections/GetInTouch";
+import { Services } from "./collections/Services";
+import { Experience } from "./collections/Experience";
+import { Posts } from "./collections/Posts";
+import { Testimonials } from "./collections/Testimonials";
+import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -21,7 +26,18 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Projects, Technologies, GetInTouch],
+  collections: [
+    Users,
+    Media,
+    Projects,
+    Technologies,
+    GetInTouch,
+    Services,
+    Experience,
+    Posts,
+    Testimonials,
+  ],
+  globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

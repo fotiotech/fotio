@@ -72,6 +72,10 @@ export interface Config {
     projects: Project;
     technologies: Technology;
     'get-in-touch': GetInTouch;
+    services: Service;
+    experience: Experience;
+    posts: Post;
+    testimonials: Testimonial;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +88,10 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     technologies: TechnologiesSelect<false> | TechnologiesSelect<true>;
     'get-in-touch': GetInTouchSelect<false> | GetInTouchSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    experience: ExperienceSelect<false> | ExperienceSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -93,8 +101,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -251,6 +263,128 @@ export interface GetInTouch {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: string;
+  title: string;
+  summary: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image?: (string | null) | Media;
+  /**
+   * Used for sorting
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience".
+ */
+export interface Experience {
+  id: string;
+  type: 'work' | 'education';
+  role: string;
+  organization: string;
+  startDate: string;
+  endDate?: string | null;
+  current?: boolean | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Higher numbers first
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  coverImage?: (string | null) | Media;
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  publishedDate?: string | null;
+  status?: ('draft' | 'published') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: string;
+  name: string;
+  /**
+   * e.g. Founder, Acme Inc.
+   */
+  role?: string | null;
+  quote: string;
+  avatar?: (string | null) | Media;
+  /**
+   * 1–5 stars
+   */
+  rating?: number | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -292,6 +426,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'get-in-touch';
         value: string | GetInTouch;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: string | Service;
+      } | null)
+    | ({
+        relationTo: 'experience';
+        value: string | Experience;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: string | Testimonial;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -430,6 +580,70 @@ export interface GetInTouchSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  description?: T;
+  image?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience_select".
+ */
+export interface ExperienceSelect<T extends boolean = true> {
+  type?: T;
+  role?: T;
+  organization?: T;
+  startDate?: T;
+  endDate?: T;
+  current?: T;
+  description?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  content?: T;
+  coverImage?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  publishedDate?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  quote?: T;
+  avatar?: T;
+  rating?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -467,6 +681,100 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  siteName?: string | null;
+  /**
+   * Your display name
+   */
+  name?: string | null;
+  /**
+   * e.g. Software Developer
+   */
+  role?: string | null;
+  /**
+   * Hero headline / intro sentence
+   */
+  tagline?: string | null;
+  /**
+   * About me section
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  profileImage?: (string | null) | Media;
+  heroImage?: (string | null) | Media;
+  email?: string | null;
+  phone?: string | null;
+  location?: string | null;
+  /**
+   * CV / resume PDF
+   */
+  resume?: (string | null) | Media;
+  socials?:
+    | {
+        platform: 'twitter' | 'instagram' | 'facebook' | 'linkedin' | 'github' | 'youtube' | 'dribbble';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  ogImage?: (string | null) | Media;
+  /**
+   * Canonical site URL, e.g. https://example.com
+   */
+  siteUrl?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  name?: T;
+  role?: T;
+  tagline?: T;
+  bio?: T;
+  profileImage?: T;
+  heroImage?: T;
+  email?: T;
+  phone?: T;
+  location?: T;
+  resume?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  seoTitle?: T;
+  seoDescription?: T;
+  ogImage?: T;
+  siteUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,4 +1,34 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionAfterChangeHook, CollectionConfig } from "payload";
+
+const notifyOwnerAfterChange: CollectionAfterChangeHook = async ({
+  doc,
+  operation,
+  req,
+}) => {
+  if (operation !== "create") return doc;
+
+  const notifyEmail = process.env.CONTACT_NOTIFY_EMAIL;
+  if (!notifyEmail) return doc;
+
+  try {
+    await req.payload.sendEmail({
+      to: notifyEmail,
+      subject: `New message from ${doc.firstName} ${doc.lastName}`,
+      text: [
+        `Name: ${doc.firstName} ${doc.lastName}`,
+        `Email: ${doc.email}`,
+        `Contact: ${doc.contact}`,
+        "",
+        doc.message,
+      ].join("\n"),
+    });
+  } catch (error) {
+    // Never block the submission on a mailer misconfiguration.
+    console.error("[Contact] Failed to send notification email:", error);
+  }
+
+  return doc;
+};
 
 export const GetInTouch: CollectionConfig = {
   slug: "get-in-touch",
@@ -28,5 +58,8 @@ export const GetInTouch: CollectionConfig = {
       admin: { position: "sidebar" },
     },
   ],
+  hooks: {
+    afterChange: [notifyOwnerAfterChange],
+  },
   timestamps: true,
 };

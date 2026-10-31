@@ -1,132 +1,134 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { MenuIcon, Share2Icon, XIcon } from "lucide-react";
 
-const Header = () => {
-  const [isAsideOpen, setIsAsideOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
+import { ThemeToggle } from "./ThemeToggle";
+import type { SiteSetting } from "@/payload-types";
 
-  const toggleAside = () => setIsAsideOpen(!isAsideOpen);
-  const toggleShare = () => setIsShareOpen(!isShareOpen);
+const NAV_LINKS = [
+  { href: "/#about", label: "About" },
+  { href: "/#skills", label: "Skills" },
+  { href: "/#services", label: "Services" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/blog", label: "Blog" },
+  { href: "/#contact", label: "Contact" },
+];
 
-  const shareOnSelectedPlatform = () => {
-    alert("Share functionality to be implemented.");
-  };
+export default function Header({ site }: { site: SiteSetting }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function sharePage() {
+    const url = window.location.href;
+    const title = document.title;
+
+    const share = navigator.share;
+    if (share) {
+      try {
+        await share({ title, url });
+        return;
+      } catch {
+        // User cancelled the share sheet — fall through to copy.
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable — do nothing harmful.
+    }
+  }
 
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
-      {/* Menu and Logo */}
-      <div className="flex items-center gap-4">
-        <Image
-          id="menu"
-          src="/menu_24dp_FILL0_wght400_GRAD0_opsz24.png"
-          alt="Menu"
-          width={24}
-          height={24}
-          className="cursor-pointer md:hidden"
-          onClick={toggleAside}
-        />
-        <h1 className="text-xl font-bold">
-          <Link href="/dyfk">Dyfk.</Link>
-        </h1>
-      </div>
+    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded-md p-2 md:hidden"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+          >
+            {menuOpen ? (
+              <XIcon className="size-5" aria-hidden="true" />
+            ) : (
+              <MenuIcon className="size-5" aria-hidden="true" />
+            )}
+          </button>
+          <Link href="/" className="text-xl font-bold">
+            {site.siteName ?? "Dyfk"}
+            <span className="text-primary">.</span>
+          </Link>
+        </div>
 
-      {/* Navigation */}
-      <nav className="hidden md:block">
-        <ul className="flex gap-6">
-          <li>
-            <Link href="#about">About</Link>
-          </li>
-          <li>
-            <Link href="#service">Service</Link>
-          </li>
-          <li>
-            <Link href="/project">Project</Link>
-          </li>
-          <li>
-            <Link href="#contact">Contact</Link>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Favorite and Share */}
-      <div className="flex items-center gap-4">
-        <Image
-          id="favorite"
-          src="/favorite_24dp_FILL0_wght400_GRAD0_opsz24.png"
-          alt="Favorite"
-          width={24}
-          height={24}
-          className="cursor-pointer"
-        />
-        <p id="share_btn" className="cursor-pointer" onClick={toggleShare}>
-          <Image
-            src="/share_24dp_FILL0_wght400_GRAD0_opsz24.png"
-            alt="Share"
-            width={24}
-            height={24}
-          />
-        </p>
-        {isShareOpen && (
-          <div className="absolute top-16 right-4 bg-gray-700 p-4 rounded-md shadow-md">
-            <Image
-              id="platforms_close"
-              src="/close_24dp_FILL0_wght400_GRAD0_opsz24.png"
-              alt="Close Platforms"
-              width={24}
-              height={24}
-              className="cursor-pointer mb-2"
-              onClick={toggleShare}
-            />
-            <select
-              id="platformSelect"
-              title="platformSelect"
-              className="w-full p-2 border border-gray-600 rounded-md bg-gray-800 text-white"
-            >
-              <option value="">Select Platform</option>
-              <option value="twitter">Twitter</option>
-              <option value="facebook">Facebook</option>
-              <option value="linkedin">LinkedIn</option>
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* Mobile Aside Menu */}
-      {isAsideOpen && (
-        <aside className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 p-6 flex flex-col items-start gap-4">
-          <Image
-            id="close"
-            src="/close_24dp_FILL0_wght400_GRAD0_opsz24.png"
-            alt="Close"
-            width={24}
-            height={24}
-            className="cursor-pointer self-end"
-            onClick={toggleAside}
-          />
-          <ul className="flex flex-col gap-4 text-lg">
-            <li onClick={() => setIsAsideOpen(false)}>
-              <Link href="#about">About</Link>
-            </li>
-            <li onClick={() => setIsAsideOpen(false)}>
-              <Link href="#service">Service</Link>
-            </li>
-            <li onClick={() => setIsAsideOpen(false)}>
-              <Link href="/project">Project</Link>
-            </li>
-            <li onClick={() => setIsAsideOpen(false)}>
-              <Link href="#contact">Contact</Link>
-            </li>
-            <li>
-              <a href="tel:+237696210939">+237 696-210-939</a>
-            </li>
+        <nav aria-label="Primary" className="hidden md:block">
+          <ul className="flex items-center gap-6">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
-        </aside>
+        </nav>
+
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={sharePage}
+            aria-label="Share this page"
+            className="relative inline-flex items-center justify-center rounded-md p-2 transition-colors hover:bg-muted"
+          >
+            <Share2Icon className="size-5" aria-hidden="true" />
+            {copied && (
+              <span className="absolute -bottom-7 right-0 rounded bg-foreground px-2 py-0.5 text-xs text-background">
+                Link copied
+              </span>
+            )}
+          </button>
+          <ThemeToggle />
+        </div>
+      </div>
+
+      {menuOpen && (
+        <div className="border-t border-border md:hidden">
+          <nav aria-label="Mobile" className="mx-auto max-w-6xl px-4 py-4">
+            <ul className="flex flex-col gap-3">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              {site.phone ? (
+                <li>
+                  <a
+                    href={`tel:${site.phone}`}
+                    className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
+                  >
+                    {site.phone}
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </nav>
+        </div>
       )}
     </header>
   );
-};
-
-export default Header;
+}

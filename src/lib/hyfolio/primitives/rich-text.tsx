@@ -1,5 +1,5 @@
 interface LexicalNode {
-  type: string;
+  type?: string;
   children?: LexicalNode[];
   text?: string;
   format?: number;

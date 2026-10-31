@@ -1,39 +1,42 @@
-'use client';
+import { MediaImage } from "./MediaImage";
+import { Reveal } from "./Reveal";
+import { HyfRichText } from "@/src/lib/hyfolio/primitives/rich-text";
+import type { SiteSetting } from "@/payload-types";
 
-import React from 'react';
-import Image from 'next/image';
+export default function AboutSection({ site }: { site: SiteSetting }) {
+  const name = site.name ?? "me";
 
-const AboutSection = () => {
   return (
-    <section id="about" className="py-16 bg-gray-100">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row items-center space-y-8 lg:space-y-0">
-        <div className="w-full lg:w-1/3 flex justify-center">
-          <Image
-            src="/me.jpg"
-            alt="Picture of me"
-            width={300}
-            height={300}
-            className="rounded-full shadow-lg"
-          />
-        </div>
+    <section id="about" className="py-20">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-4 lg:flex-row">
+        <Reveal className="w-full lg:w-1/3">
+          {site.profileImage ? (
+            <MediaImage
+              media={site.profileImage}
+              alt={name}
+              width={300}
+              height={300}
+              className="mx-auto rounded-full object-cover shadow-lg"
+            />
+          ) : null}
+        </Reveal>
 
-        <div className="w-full lg:w-2/3 space-y-4">
-          <h2 className="text-3xl font-semibold text-gray-800">
-            About <span className="text-blue-500">me</span>
+        <Reveal delay={100} className="w-full lg:w-2/3">
+          <h2 className="text-3xl font-semibold">
+            About <span className="text-primary">{name}</span>
           </h2>
-
-          <div className="text-gray-700 space-y-2">
-            <strong className="block text-xl font-semibold">
-              I have a strong passion for tech and started coding while studying in high school.
-            </strong>
-            <p className="text-lg">
-              I'm passionate about coding, learning new things, and thinking about what's next.
+          {site.bio ? (
+            <div className="prose-custom mt-4 space-y-3 text-muted-foreground">
+              <HyfRichText content={site.bio} />
+            </div>
+          ) : (
+            <p className="mt-4 text-lg text-muted-foreground">
+              I&apos;m passionate about coding, learning new things, and thinking
+              about what&apos;s next.
             </p>
-          </div>
-        </div>
+          )}
+        </Reveal>
       </div>
     </section>
   );
-};
-
-export default AboutSection;
+}
