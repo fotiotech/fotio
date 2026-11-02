@@ -18,11 +18,7 @@ function period(item: Experience): string {
   return start || end;
 }
 
-export default function ExperienceTimeline({
-  items,
-}: {
-  items: Experience[];
-}) {
+export default function ExperienceTimeline({ items }: { items: Experience[] }) {
   const sorted = [...items].sort((a, b) => {
     const aStart = a.startDate ?? "";
     const bStart = b.startDate ?? "";
@@ -39,9 +35,7 @@ export default function ExperienceTimeline({
         </Reveal>
 
         {sorted.length === 0 ? (
-          <p className="mt-8 text-muted-foreground">
-            No experience added yet — add some in the Payload admin.
-          </p>
+          <p className="mt-8 text-muted-foreground">No experience added yet.</p>
         ) : (
           <ol className="mt-12 space-y-8 border-l border-border pl-6">
             {sorted.map((item, index) => (
@@ -51,7 +45,10 @@ export default function ExperienceTimeline({
                   className="absolute -left-[31px] top-1 flex size-4 items-center justify-center rounded-full border border-border bg-background"
                 >
                   {item.type === "education" ? (
-                    <GraduationCapIcon className="size-2.5" aria-hidden="true" />
+                    <GraduationCapIcon
+                      className="size-2.5"
+                      aria-hidden="true"
+                    />
                   ) : (
                     <BriefcaseIcon className="size-2.5" aria-hidden="true" />
                   )}
