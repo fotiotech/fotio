@@ -1,5 +1,7 @@
+// payload.config.ts
 import { mongooseAdapter } from "@payloadcms/db-mongodb";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { s3Storage } from "@payloadcms/storage-s3";
 import path from "path";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
@@ -47,5 +49,19 @@ export default buildConfig({
     url: process.env.DATABASE_URL || "",
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    s3Storage({
+      bucket: process.env.AWS_BUCKET_NAME!,
+      collections: {
+        media: true,
+      },
+      config: {
+        region: process.env.AWS_REGION!,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      },
+    }),
+  ],
 });
